@@ -1,7 +1,8 @@
-com.capventis.SunburstQuadrant
-==============================
+# QlikSense Sunburst360
 
-The Sunburst Quadrant visualizes hierarchical data.
+This is a fork from the original com.capventis.SunburstQuadrant.
 
-Because it occupies only a quadrant, it is slightly more space efficient than a circular sunburst object.  This means that it also gives more space to the actual data.
+Sunburst360 visualizes hierarchical data in 360º
 
+## Installation
+Download the zip, unzip it into `Documents/Qlik/Sense/Extensions`.
