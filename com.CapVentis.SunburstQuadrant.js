@@ -1,3 +1,7 @@
+// Declare viewer width and height as global variables, to be accesible from all functions
+
+var vw = 0;
+var vh = 0;
 
 define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
 	
@@ -69,8 +73,8 @@ define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
 			var divName = layout.qInfo.qId;
 
 			// Calculate the height and width that user has drawn the extension object
-            var vw = $element.width();
-            var vh = $element.height();
+            vw = $element.width();
+            vh = $element.height();
 			
 			var html = '<div id="canvas'
 				  + divName
@@ -212,8 +216,8 @@ function sbq_sector(app, qElemNumber, _this, paper, cx, cy, r, rin, startAngle, 
         // The centre position for the text is half way betweent the two radii
         var textRadius = r + ((rin - r) / 2);
         // Now we know the radius and angle, we can use Trig to calculate the x, y centre for the text object
-        var textX = Math.round(Math.cos(textAngle * rad) * textRadius);
-        var textY = paper.canvas.height.baseVal.value - Math.round(Math.sin(textAngle * rad) * textRadius);
+        var textX = Math.round(Math.cos(textAngle * rad) * textRadius + vw / 2);
+        var textY = -vh/2 + paper.canvas.height.baseVal.value - Math.round(Math.sin(textAngle * rad) * textRadius);
 
         // Use Raphael to generate the SVG text object
         var txt = paper.text(textX, textY, searchText);
@@ -291,7 +295,7 @@ function sbq_drawChart(app, _this, layout, divName, frameX, frameY) {
     var level4 = { start: 0, end: 0 };
 
     // What is the max radius - the lower of the width or height of the frame
-    var maxRad = Math.min.apply(Math, [frameX, frameY]);
+    var maxRad = Math.min.apply(Math, [frameX/2, frameY/2]);
 
     // Calculate the size for each segment, the 2.5 is a factor to allow for lines in between each segment
     var segSize = Math.round((maxRad - (vColumnCount * 2.5)) / vColumnCount / 1.618);
@@ -470,10 +474,10 @@ function sbq_drawChart(app, _this, layout, divName, frameX, frameY) {
     level4min = level4min * 0.95;
 
     // Draw level 0 - this is the "sun"
-    sbq_sector(app, null, _this, paper, 0, frameY, level0.start, level0.end, 0, 90, "", "", -1, { fill: "#b0afae", stroke: linecolor, "stroke-width": "1px" });
+    sbq_sector(app, null, _this, paper, vw / 2, frameY / 2, level0.start, level0.end, 0, 359.95, "", "", -1, { fill: "#b0afae", stroke: linecolor, "stroke-width": "1px" });
 
     // central text for level 0
-    var txt = paper.text(segSize / 2, frameY - (segSize / 3), 'Total :\n' + sbq_addCommas(overallTotal.toFixed(2)));
+    var txt = paper.text(vw / 2, frameY/2, 'Total :\n' + sbq_addCommas(overallTotal.toFixed(2)));
     txt.attr({ "font-size": (Math.round(segSize / 10)), "font-family": "Arial, sans-serif" });
     txt.click(function () {
         //_this.backendApi.clearSelections();
@@ -491,19 +495,19 @@ function sbq_drawChart(app, _this, layout, divName, frameX, frameY) {
     // call the drawLevel function to draw each level that we require
  
     // Draw level 1
-    sbq_drawLevel(app, layout, 0, level1arr, level1qElemNumber, divName, paper, frameY, level1.start, level1.end, level1min, level1max, overallTotal, linecolor);
+    sbq_drawLevel(app, layout, 0, level1arr, level1qElemNumber, divName, paper, frameY / 2, level1.start, level1.end, level1min, level1max, overallTotal, linecolor);
 
     // Draw level 2
     if (vColumnCount > 2)
-        sbq_drawLevel(app, layout, 1, level2arr, level2qElemNumber, divName, paper, frameY, level2.start, level2.end, level2min, level2max, overallTotal, linecolor);
+        sbq_drawLevel(app, layout, 1, level2arr, level2qElemNumber, divName, paper, frameY / 2, level2.start, level2.end, level2min, level2max, overallTotal, linecolor);
 
     // Draw level 3
     if (vColumnCount > 3)
-        sbq_drawLevel(app, layout, 2, level3arr, level3qElemNumber, divName, paper, frameY, level3.start, level3.end, level3min, level3max, overallTotal, linecolor);
+        sbq_drawLevel(app, layout, 2, level3arr, level3qElemNumber, divName, paper, frameY / 2, level3.start, level3.end, level3min, level3max, overallTotal, linecolor);
 
     // Draw level 4
     if (vColumnCount > 4)
-        sbq_drawLevel(app, layout, 3, level4arr, level4qElemNumber, divName, paper, frameY, level4.start, level4.end, level4min, level4max, overallTotal, linecolor);
+        sbq_drawLevel(app, layout, 3, level4arr, level4qElemNumber, divName, paper, frameY / 2, level4.start, level4.end, level4min, level4max, overallTotal, linecolor);
 
 }
 
@@ -544,7 +548,7 @@ function sbq_drawLevel(app, layout, columnNumber, level_arr, level_qElemNumber, 
         var vTable = '<table><tr><th>' + vName + '</th></tr><tr><td>' + vValue + '</td></tr></table>';
 
         // calculate the angle that this segment will span
-        var angle = 90 * level_arr[o] / overallTotal;
+        var angle = 360 * level_arr[o] / overallTotal;
 
 		var palette = [
 			 '#4477aa',
@@ -568,7 +572,7 @@ function sbq_drawLevel(app, layout, columnNumber, level_arr, level_qElemNumber, 
         var vOpacity=layout.myproperties.opacitypercentage/100;
 		
         // call the sector function to draw the segment
-        sbq_sector(app, level_qElemNumber[o], _this, paper, 0, frameY, start_radius, end_radius, startAngle, startAngle + angle, vTable, vName, columnNumber, { fill: vColor, stroke: linecolor, "stroke-width": "1px", "opacity" : vOpacity });
+        sbq_sector(app, level_qElemNumber[o], _this, paper, vw / 2, frameY, start_radius, end_radius, startAngle, startAngle + angle, vTable, vName, columnNumber, { fill: vColor, stroke: linecolor, "stroke-width": "1px", "opacity" : vOpacity });
 
         // update the start angle for the next segment
         startAngle += angle;
