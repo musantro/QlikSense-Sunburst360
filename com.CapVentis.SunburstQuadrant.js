@@ -2,6 +2,7 @@
 
 var vw = 0;
 var vh = 0;
+var vColorRange = 0;
 
 define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
 	
@@ -54,7 +55,17 @@ define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
 							min: 20,
 							max: 100,
 							step: 1
-						}
+                        },
+                        colorRangeProp: {
+                            type: "integer",
+                            label: "Color Range",
+                            ref: "myproperties.colorrange",
+                            defaultValue: 100,
+                            component: "slider",
+                            min: 0,
+                            max: 100,
+                            step: 5
+                        }
 					}
 				}
 			}
@@ -70,7 +81,8 @@ define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
 			var _this = this;
 
 			// Get the chart ID from the QlikView document for this control - will be something like "CH2340091" or "CH01"
-			var divName = layout.qInfo.qId;
+            var divName = layout.qInfo.qId;
+            vColorRange = layout.myproperties.colorrange/100;
 
 			// Calculate the height and width that user has drawn the extension object
             vw = $element.width();
@@ -567,7 +579,7 @@ function sbq_drawLevel(app, layout, columnNumber, level_arr, level_qElemNumber, 
 			];						
 		
         // calculate the colour for this segment
-        var vColor = sbq_colormix(((level_arr[o] - level_min) / (level_max - level_min)), '#ffffff', palette[columnNumber]); //'#4477aa');
+        var vColor = sbq_colormix(vColorRange*(1-(((level_arr[o] - level_min) / (level_max - level_min))))+((level_arr[o] - level_min) / (level_max - level_min)), '#ffffff', palette[columnNumber]); //'#4477aa');
 
         var vOpacity=layout.myproperties.opacitypercentage/100;
 		
