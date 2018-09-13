@@ -65,6 +65,16 @@ define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
                             min: 0,
                             max: 100,
                             step: 5
+                        },
+                        proportionProp: {
+                            type: "integer",
+                            label: "Proportion",
+                            ref: "myproperties.proportion",
+                            defaultValue: 116,
+                            component: "slider",
+                            min: 50,
+                            max: 200,
+                            step: 5
                         }
 					}
 				}
@@ -83,6 +93,7 @@ define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
 			// Get the chart ID from the QlikView document for this control - will be something like "CH2340091" or "CH01"
             var divName = layout.qInfo.qId;
             vColorRange = layout.myproperties.colorrange/100;
+            var proportion = layout.myproperties.proportion/100;
 
 			// Calculate the height and width that user has drawn the extension object
             vw = $element.width();
@@ -104,7 +115,7 @@ define( ["jquery", "qlik", "./raphael-min"], function ( $, qlik, Raphael ) {
             if ($('#hoverBox').length == 0)
                 $("body").append('<div id="hoverBox" style="z-index:99; display:none;font-size:12px;background-color: #fff;color:#333;font-family:Arial, Helvetica, sans-serif;position:absolute;top:0px;left:0px;background-repeat:no-repeat;overflow:hidden;z-index:999999999 !important;padding:0px 10px;border:1px solid #439400;line-height:14px;"><p></p></div>');
              
-			sbq_drawChart(app, _this, layout, divName, vw, vh);
+			sbq_drawChart(app, _this, layout, divName, vw, vh, proportion);
 						
 			if ( this.selectionsEnabled ) {
 				$element.find( '.selectable' ).on( 'qv-activate', function () {
@@ -291,8 +302,8 @@ function sbq_sector(app, qElemNumber, _this, paper, cx, cy, r, rin, startAngle, 
 ///                                                 + 'height:' + vh + 'px;'
 ///                                                 + 'left: 0; position: absolute;'
 ///                                                 + 'top: 0;z-index:999;"></div>'; 
-function sbq_drawChart(app, _this, layout, divName, frameX, frameY) {
-
+function sbq_drawChart(app, _this, layout, divName, frameX, frameY, k) {
+    console.log(k)
 	var dimensions = layout.qHyperCube.qDimensionInfo,
 		qData = layout.qHyperCube.qDataPages[0].qMatrix;
 
@@ -315,9 +326,9 @@ function sbq_drawChart(app, _this, layout, divName, frameX, frameY) {
 	
 	var proRata=[
 		1,
-		vColumnCount > 2 ? 1/1.618 : 0,
-		vColumnCount > 3 ? (1/1.618)/1.618 : 0,
-		vColumnCount > 4 ? ((1/1.618)/1.618)/1.618 : 0 
+		vColumnCount > 2 ? 1/k : 0,
+		vColumnCount > 3 ? (1/k)/k : 0,
+		vColumnCount > 4 ? ((1/k)/k)/k : 0 
 		];
 	
 	proRataTotal=proRata[0]+proRata[1]+proRata[2]+proRata[3];
@@ -582,7 +593,6 @@ function sbq_drawLevel(app, layout, columnNumber, level_arr, level_qElemNumber, 
         var vColor = sbq_colormix(vColorRange*(1-(((level_arr[o] - level_min) / (level_max - level_min))))+((level_arr[o] - level_min) / (level_max - level_min)), '#ffffff', palette[columnNumber]); //'#4477aa');
 
         var vOpacity=layout.myproperties.opacitypercentage/100;
-		
         // call the sector function to draw the segment
         sbq_sector(app, level_qElemNumber[o], _this, paper, vw / 2, frameY, start_radius, end_radius, startAngle, startAngle + angle, vTable, vName, columnNumber, { fill: vColor, stroke: linecolor, "stroke-width": "1px", "opacity" : vOpacity });
 
