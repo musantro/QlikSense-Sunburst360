@@ -500,7 +500,7 @@ function sbq_drawChart(app, _this, layout, divName, frameX, frameY, k) {
     level4min = level4min * 0.95;
 
     // Draw level 0 - this is the "sun"
-    sbq_sector(app, null, _this, paper, vw / 2, frameY / 2, level0.start, level0.end, 0, 359.95, "", "", -1, { fill: "#b0afae", stroke: linecolor, "stroke-width": "1px" });
+    sbq_sector(app, null, _this, paper, vw / 2, frameY / 2, level0.start, level0.end, 0, 359.9999, "", "", -1, { fill: "#b0afae", stroke: linecolor, "stroke-width": "0px" });
 
     // central text for level 0
     var txt = paper.text(vw / 2, frameY/2, 'Total :\n' + sbq_addCommas(overallTotal.toFixed(2)));
