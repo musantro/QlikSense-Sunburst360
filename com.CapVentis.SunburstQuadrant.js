@@ -248,8 +248,9 @@ function sbq_sector(app, qElemNumber, _this, paper, cx, cy, r, rin, startAngle, 
         txt.attr({ "font-size": (Math.round((rin - r) / 10)), "font-family": "Arial, sans-serif", "-webkit-font-smoothing": "antialiased" });  //, Helvetica, sans-serif" });
         // rotate the text to the correct angle
 
-
-        // txt.transform("r-" + 0);
+        (textAngle > 90) && (textAngle < 270) ? textAngle = textAngle + 180: textAngle = textAngle ;
+        
+        txt.transform("r-" + textAngle) ;
 
         // Calculate what % of the sector is occupied by the text
         var percOfBox = Math.sqrt(Math.pow(txt.getBBox().width, 2) + Math.pow(txt.getBBox().height, 2)) / (rin - r);
