@@ -504,7 +504,7 @@ function sbq_drawChart(app, _this, layout, divName, frameX, frameY, k) {
 
     // central text for level 0
     var txt = paper.text(vw / 2, frameY/2, 'Total :\n' + sbq_addCommas(overallTotal.toFixed(2)));
-    txt.attr({ "font-size": (Math.round(segSize / 10)), "font-family": "Arial, sans-serif" });
+    txt.attr({ "font-size": (Math.round(segSize / 5)), "font-family": "Arial, sans-serif" });
     txt.click(function () {
         //_this.backendApi.clearSelections();
 		app.clearAll();
